@@ -1,0 +1,7 @@
+apiVersion: extension.argoproj.io/v1
+kind: ArgoCDExtension
+metadata:
+  name: rollout
+spec:
+  repository: https://github.com/rbreeze/rollout-extension
+  revision: HEAD
