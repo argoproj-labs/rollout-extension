@@ -3,7 +3,6 @@ import {
   Box,
   BoxTitle,
   CenteredRow,
-  EffectDiv,
   Filler,
   InfoItem,
   InfoItemKind,
@@ -62,6 +61,11 @@ const GetReplicaSets = (tree: any, rollout: any) => {
   return Object.values(ownedReplicaSets);
 };
 
+const ParseRevisionFromInfo = (replicaSet: any): number => {
+  const infoItem = replicaSet.info.find((i: any) => i.name === "Revision");
+  return parseInt(infoItem.value.replace("Rev:", ""), 10);
+};
+
 const GetRevisions = (replicaSets: any): any[] => {
   if (!replicaSets) {
     return;
@@ -75,8 +79,7 @@ const GetRevisions = (replicaSets: any): any[] => {
   } as any;
 
   for (const rs of replicaSets || []) {
-    const infoItem = rs.info.find((i: any) => i.name === "Revision");
-    const rev = parseInt(infoItem.value.replace("Rev:", ""), 10);
+    const rev = ParseRevisionFromInfo(rs);
     if (!map[rev]) {
       map[rev] = { ...emptyRevision };
     }
@@ -102,19 +105,42 @@ const RevisionWidget = (props: { revision: any; current: boolean }) => {
   const { revision } = props;
   // const icon = collapsed ? faChevronCircleDown : faChevronCircleUp;
   // const images = parseImages(revision.replicaSets);
+
   return (
-    <EffectDiv key={0} className="revision">
+    <React.Fragment>
       <ThemeDiv className="revision__header">
         Revision {revision.number}
       </ThemeDiv>
       <ThemeDiv className="revision__images">
         {/* <ImageItems images={images} /> */}
       </ThemeDiv>
+      <div>
+        {revision.replicaSets?.map((rs: any, i: any) => {
+          return (
+            <ThemeDiv className="pods">
+              {rs.name && (
+                <ThemeDiv className="pods__header">
+                  <span style={{ marginRight: "5px" }}>{rs.name}</span>{" "}
+                  <div style={{ marginLeft: "auto" }}>
+                    Revision {rs.revision}
+                  </div>
+                </ThemeDiv>
+              )}
 
-      {/* {!collapsed && (
-          <ReplicaSets replicaSets={revision.replicaSets} />
-      )} */}
-    </EffectDiv>
+              {rs.pods && rs.pods.length > 0 && (
+                <ThemeDiv className="pods__container">
+                  {rs.pods.map((pod: any, i: number) => (
+                    <div>
+                      {pod.name} {i}
+                    </div>
+                  ))}
+                </ThemeDiv>
+              )}
+            </ThemeDiv>
+          );
+        })}
+      </div>
+    </React.Fragment>
   );
 };
 
@@ -173,7 +199,6 @@ export const Extension = (props: {
   const currentStepIndex = status.currentStepIndex;
   const currentStep = spec.strategy.canary.steps[currentStepIndex];
 
-  // let actualWeight = 100;
   if (currentStep && status.availableReplicas > 0) {
     if (!spec.strategy.canary.trafficRouting) {
     } else {
