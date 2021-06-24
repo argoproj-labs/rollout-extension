@@ -3,14 +3,17 @@ import {
   Box,
   BoxTitle,
   CenteredRow,
+  EffectDiv,
   Filler,
   InfoItem,
   InfoItemKind,
   InfoItemRow,
+  PodIcon,
   ThemeDiv,
 } from "argo-ux";
 
 import "./Extension.scss";
+import "../node_modules/argo-ux/components/pod/pod.scss";
 
 interface ApplicationResourceTree {}
 
@@ -107,7 +110,7 @@ const RevisionWidget = (props: { revision: any; current: boolean }) => {
   // const images = parseImages(revision.replicaSets);
 
   return (
-    <React.Fragment>
+    <EffectDiv className="revision">
       <ThemeDiv className="revision__header">
         Revision {revision.number}
       </ThemeDiv>
@@ -116,38 +119,50 @@ const RevisionWidget = (props: { revision: any; current: boolean }) => {
       </ThemeDiv>
       <div>
         {revision.replicaSets?.map((rs: any, i: any) => {
+          let rev = "?";
+          for (const item of rs.info) {
+            if (item.name === "Revision" && item.value.startsWith("Rev:")) {
+              rev = item.value.slice("Rev:".length);
+            }
+          }
           return (
             <ThemeDiv className="pods">
               {rs.name && (
                 <ThemeDiv className="pods__header">
                   <span style={{ marginRight: "5px" }}>{rs.name}</span>{" "}
-                  <div style={{ marginLeft: "auto" }}>
-                    Revision {rs.revision}
-                  </div>
+                  <div style={{ marginLeft: "auto" }}>Revision {rev}</div>
                 </ThemeDiv>
               )}
 
               {rs.pods && rs.pods.length > 0 && (
                 <ThemeDiv className="pods__container">
-                  {rs.pods.map((pod: any, i: number) => (
-                    <div>
-                      {pod.name} {i}
-                    </div>
-                  ))}
+                  {rs.pods.map((pod: any, i: number) => {
+                    let status = "Unknown";
+                    for (const item of pod.info) {
+                      if (item.name === "Status Reason") {
+                        status = item.value;
+                      }
+                    }
+                    return (
+                      // <div className="pod-icon">
+                      <PodIcon status={status} />
+                      // </div>
+                    );
+                  })}
                 </ThemeDiv>
               )}
             </ThemeDiv>
           );
         })}
       </div>
-    </React.Fragment>
+    </EffectDiv>
   );
 };
 
 const Containers = (props: { containers: any }) => {
   const { containers } = { ...props };
   return (
-    <Box>
+    <Box style={{ height: "max-content" }}>
       <BoxTitle>Containers</BoxTitle>
       {(containers || []).map((container: any, i: number) => (
         <div
@@ -172,8 +187,11 @@ const Containers = (props: { containers: any }) => {
         </div>
       ))}
       {containers.length < 2 && (
-        <Filler>
+        <Filler style={{ paddingBottom: "1em" }}>
           <span style={{ marginRight: "5px" }}></span>
+          <span style={{ marginRight: "5px" }}>
+            <i className="fa fa-boxes" />
+          </span>
           Add more containers to fill this space!
         </Filler>
       )}
@@ -189,11 +207,8 @@ export const Extension = (props: {
   const { resource, state, tree } = props as any;
   const { spec, status } = state;
 
-  console.log(state);
   const replicaSets = GetReplicaSets(tree, resource);
   const revisions = GetRevisions(replicaSets);
-  console.log(replicaSets);
-  console.log(revisions);
 
   const strategy = spec.strategy.canary ? "Canary" : "BlueGreen";
   const currentStepIndex = status.currentStepIndex;
@@ -214,7 +229,7 @@ export const Extension = (props: {
           <InfoItemRow
             items={{
               content: strategy,
-              //   icon: iconForStrategy(rollout.strategy as Strategy),
+              icon: strategy === "Canary" ? "fa-dove" : "fa-palette",
               kind: strategy.toLowerCase() as InfoItemKind,
             }}
             label="Strategy"
@@ -223,7 +238,7 @@ export const Extension = (props: {
             {strategy === "Canary" && (
               <React.Fragment>
                 <InfoItemRow
-                  items={{ content: currentStepIndex }}
+                  items={{ content: currentStepIndex, icon: "fa-shoe-prints" }}
                   label="Step"
                 />
                 <InfoItemRow
@@ -231,13 +246,12 @@ export const Extension = (props: {
                     content: `${
                       currentStep ? GetCurrentSetWeight(spec, status) : 100
                     }`,
+                    icon: "fa-balance-scale-right",
                   }}
                   label="Set Weight"
                 />
                 <InfoItemRow
-                  items={{
-                    content: "0",
-                  }}
+                  items={{ content: "0", icon: "fa-balance-scale" }}
                   label="Actual Weight"
                 />{" "}
               </React.Fragment>

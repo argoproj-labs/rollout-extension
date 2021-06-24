@@ -1,0 +1,46 @@
+@import "node_modules/argo-ux/styles/colors";
+
+.pods {
+  &__container {
+    display: flex;
+  }
+}
+
+.revision {
+  padding: 15px;
+  margin-bottom: 1em;
+  background: none;
+
+  &__background {
+    background: $argo-color-gray-2;
+    border: 1px solid $argo-color-gray-4;
+    border-radius: 5px;
+  }
+
+  &--dark > &__background {
+    border: none;
+    background: $slate;
+  }
+
+  &:hover > &__background {
+    transform: scale(1.02);
+    box-shadow: 1px 1px 5px rgba(0, 0, 0, 0.1);
+  }
+
+  &__header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 1em;
+    font-size: 18px;
+    font-weight: 500;
+    &__button {
+      cursor: pointer;
+      &:hover {
+        color: $sea;
+      }
+      &--dark:hover {
+        color: $sky;
+      }
+    }
+  }
+}
