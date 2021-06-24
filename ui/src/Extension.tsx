@@ -104,18 +104,36 @@ const GetRevisions = (replicaSets: any): any[] => {
   return revisions;
 };
 
+enum ImageTag {
+  Canary = "canary",
+  Stable = "stable",
+  Active = "active",
+  Preview = "preview",
+  Unknown = "unknown",
+}
+
+export const IconForTag = (t?: ImageTag) => {
+  switch (t) {
+    case ImageTag.Canary:
+      return "fa-dove";
+    case ImageTag.Stable:
+      return "fa-thumbs-up";
+    case ImageTag.Preview:
+      return "fa-search";
+    case ImageTag.Active:
+      return "fa-running";
+    default:
+      return "fa-question";
+  }
+};
+
 const RevisionWidget = (props: { revision: any; current: boolean }) => {
   const { revision } = props;
-  // const icon = collapsed ? faChevronCircleDown : faChevronCircleUp;
-  // const images = parseImages(revision.replicaSets);
 
   return (
     <EffectDiv className="revision">
       <ThemeDiv className="revision__header">
         Revision {revision.number}
-      </ThemeDiv>
-      <ThemeDiv className="revision__images">
-        {/* <ImageItems images={images} /> */}
       </ThemeDiv>
       <div>
         {revision.replicaSets?.map((rs: any, i: any) => {
@@ -143,11 +161,7 @@ const RevisionWidget = (props: { revision: any; current: boolean }) => {
                         status = item.value;
                       }
                     }
-                    return (
-                      // <div className="pod-icon">
-                      <PodIcon status={status} />
-                      // </div>
-                    );
+                    return <PodIcon status={status} />;
                   })}
                 </ThemeDiv>
               )}
@@ -162,7 +176,7 @@ const RevisionWidget = (props: { revision: any; current: boolean }) => {
 const Containers = (props: { containers: any }) => {
   const { containers } = { ...props };
   return (
-    <Box style={{ height: "max-content" }}>
+    <Box>
       <BoxTitle>Containers</BoxTitle>
       {(containers || []).map((container: any, i: number) => (
         <div
@@ -180,14 +194,15 @@ const Containers = (props: { containers: any }) => {
               display: "flex",
               alignItems: "center",
               height: "2em",
+              justifyContent: "flex-end",
             }}
           >
             <InfoItem content={container.image} />
           </div>
         </div>
       ))}
-      {containers.length < 2 && (
-        <Filler style={{ paddingBottom: "1em" }}>
+      {(containers || []).length < 2 && (
+        <Filler style={{ paddingBottom: "1em", height: "100%" }}>
           <span style={{ marginRight: "5px" }}></span>
           <span style={{ marginRight: "5px" }}>
             <i className="fa fa-boxes" />
@@ -199,6 +214,63 @@ const Containers = (props: { containers: any }) => {
   );
 };
 
+const parseDuration = (duration: string): string => {
+  const lastChar = duration[duration.length - 1];
+  if (lastChar === "s" || lastChar === "m" || lastChar === "h") {
+    return `${duration}`;
+  }
+  return `${duration}s`;
+};
+
+const Step = (props: {
+  step: any;
+  complete?: boolean;
+  current?: boolean;
+  last?: boolean;
+}) => {
+  let icon: string;
+  let content = "";
+  let unit = "";
+  if (props.step.setWeight) {
+    icon = "fa-weight";
+    content = `Set Weight: ${props.step.setWeight}`;
+    unit = "%";
+  }
+  if (props.step.pause) {
+    icon = "fa-pause-circle";
+    if (props.step.pause.duration) {
+      content = `Pause: ${parseDuration(`${props.step.pause.duration}`)}`;
+    } else {
+      content = "Pause";
+    }
+  }
+  if (props.step.analysis) {
+    content = "Analysis";
+    icon = "fa-chart-bar";
+  }
+  if (props.step.setCanaryScale) {
+    content = "Canary Scale";
+  }
+  if (props.step.experiment) {
+    content = "Experiment";
+    icon = "fa-flask";
+  }
+
+  return (
+    <React.Fragment>
+      <EffectDiv
+        className={`steps__step ${
+          props.complete ? "steps__step--complete" : ""
+        } ${props.current ? "steps__step--current" : ""}`}
+      >
+        <i className={`fa ${icon}`} /> {content}
+        {unit}
+      </EffectDiv>
+      {!props.last && <ThemeDiv className="steps__connector" />}
+    </React.Fragment>
+  );
+};
+
 export const Extension = (props: {
   tree: ApplicationResourceTree;
   resource: Rollout;
@@ -206,6 +278,7 @@ export const Extension = (props: {
 }) => {
   const { resource, state, tree } = props as any;
   const { spec, status } = state;
+  console.log(spec, status);
 
   const replicaSets = GetReplicaSets(tree, resource);
   const revisions = GetRevisions(replicaSets);
@@ -258,12 +331,12 @@ export const Extension = (props: {
             )}
           </div>
         </Box>
-        <Containers containers={[]} />
+        <Containers containers={spec.template.spec.containers} />
       </CenteredRow>
 
       <CenteredRow>
         {replicaSets && replicaSets.length > 0 && (
-          <Box>
+          <Box style={{ height: "max-content", width: "550px" }}>
             <BoxTitle>Revisions</BoxTitle>
             <div style={{ marginTop: "1em" }}>
               {revisions.map((r, i) => (
@@ -275,9 +348,21 @@ export const Extension = (props: {
         {(strategy || "").toLowerCase() === "canary" &&
           spec.strategy.canary.steps &&
           spec.strategy.canary.steps.length > 0 && (
-            <Box>
+            <Box className="steps" style={{ width: "250px" }}>
               <BoxTitle>Steps</BoxTitle>
-              <div style={{ marginTop: "1em" }}></div>
+              <div style={{ marginTop: "1em" }}>
+                {(spec.strategy.canary.steps || []).map(
+                  (step: any, i: number) => (
+                    <Step
+                      key={`step-${i}`}
+                      step={step}
+                      complete={i < currentStepIndex}
+                      current={i === currentStepIndex}
+                      last={i === (spec.strategy.canary.steps || []).length - 1}
+                    />
+                  )
+                )}
+              </div>
             </Box>
           )}
       </CenteredRow>
