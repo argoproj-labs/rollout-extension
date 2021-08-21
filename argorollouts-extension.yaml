@@ -5,3 +5,5 @@ metadata:
 spec:
   repository: https://github.com/rbreeze/rollout-extension
   revision: HEAD
+  targetGroup: argoproj.io
+  targetKind: Rollout
