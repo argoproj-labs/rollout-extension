@@ -4,16 +4,12 @@ import {
   BoxTitle,
   CenteredRow,
   EffectDiv,
-  Filler,
   InfoItem,
   InfoItemKind,
   InfoItemRow,
-  PodIcon,
-  ThemeDiv,
-} from "argo-ux";
+} from "argo-ui/v2";
 
 import "./Extension.scss";
-import "../node_modules/argo-ux/components/pod/pod.scss";
 
 interface ApplicationResourceTree {}
 
@@ -45,18 +41,18 @@ const GetReplicaSets = (tree: any, rollout: any) => {
 
   for (const rs of allReplicaSets) {
     for (const parentRef of rs.parentRefs) {
-      if (parentRef.kind === "Rollout" && parentRef.name === rollout.name) {
+      if (parentRef?.kind === "Rollout" && parentRef?.name === rollout?.name) {
         rs.pods = [];
-        ownedReplicaSets[rs.name] = rs;
+        ownedReplicaSets[rs?.name] = rs;
       }
     }
   }
 
   for (const pod of allPods) {
     for (const parentRef of pod.parentRefs) {
-      const parent = ownedReplicaSets[parentRef.name];
+      const parent = ownedReplicaSets[parentRef?.name];
       if (parentRef.kind === "ReplicaSet" && parent) {
-        (parent.pods || []).push(pod);
+        (parent?.pods || []).push(pod);
       }
     }
   }
@@ -65,7 +61,7 @@ const GetReplicaSets = (tree: any, rollout: any) => {
 };
 
 const ParseRevisionFromInfo = (replicaSet: any): number => {
-  const infoItem = replicaSet.info.find((i: any) => i.name === "Revision");
+  const infoItem = replicaSet.info.find((i: any) => i?.name === "Revision");
   return parseInt(infoItem.value.replace("Rev:", ""), 10);
 };
 
@@ -132,44 +128,115 @@ const RevisionWidget = (props: { revision: any; current: boolean }) => {
 
   return (
     <EffectDiv className="revision">
-      <ThemeDiv className="revision__header">
-        Revision {revision.number}
-      </ThemeDiv>
+      <div className="revision__header">Revision {revision.number}</div>
       <div>
         {revision.replicaSets?.map((rs: any, i: any) => {
           let rev = "?";
           for (const item of rs.info) {
-            if (item.name === "Revision" && item.value.startsWith("Rev:")) {
+            if (item?.name === "Revision" && item.value.startsWith("Rev:")) {
               rev = item.value.slice("Rev:".length);
             }
           }
           return (
-            <ThemeDiv className="pods">
-              {rs.name && (
-                <ThemeDiv className="pods__header">
-                  <span style={{ marginRight: "5px" }}>{rs.name}</span>{" "}
+            <div className="pods">
+              {rs?.name && (
+                <div className="pods__header">
+                  <span style={{ marginRight: "5px" }}>{rs?.name}</span>{" "}
                   <div style={{ marginLeft: "auto" }}>Revision {rev}</div>
-                </ThemeDiv>
+                </div>
               )}
 
-              {rs.pods && rs.pods.length > 0 && (
-                <ThemeDiv className="pods__container">
+              {rs?.pods && rs.pods.length > 0 && (
+                <div className="pods__container">
                   {rs.pods.map((pod: any, i: number) => {
                     let status = "Unknown";
                     for (const item of pod.info) {
-                      if (item.name === "Status Reason") {
+                      if (item?.name === "Status Reason") {
                         status = item.value;
                       }
                     }
-                    return <PodIcon status={status} />;
+                    return <PodIcon status={status} key={i} />;
                   })}
-                </ThemeDiv>
+                </div>
               )}
-            </ThemeDiv>
+            </div>
           );
         })}
       </div>
     </EffectDiv>
+  );
+};
+
+enum PodStatus {
+  Pending = "pending",
+  Success = "success",
+  Failed = "failure",
+  Warning = "warning",
+  Unknown = "unknown",
+}
+
+const ParsePodStatus = (status: string): PodStatus => {
+  switch (status) {
+    case "Pending":
+    case "Terminating":
+    case "ContainerCreating":
+      return PodStatus.Pending;
+    case "Running":
+    case "Completed":
+      return PodStatus.Success;
+    case "Failed":
+    case "InvalidImageName":
+    case "CrashLoopBackOff":
+      return PodStatus.Failed;
+    case "ImagePullBackOff":
+    case "RegistryUnavailable":
+      return PodStatus.Warning;
+    default:
+      return PodStatus.Unknown;
+  }
+};
+
+const PodIcon = (props: { status: string }) => {
+  const { status } = props;
+  let icon;
+  let spin = false;
+  if (status.startsWith("Init:")) {
+    icon = "fa-circle-notch";
+    spin = true;
+  }
+  if (status.startsWith("Signal:") || status.startsWith("ExitCode:")) {
+    icon = "fa-times";
+  }
+  if (status.endsWith("Error") || status.startsWith("Err")) {
+    icon = "fa-exclamation-triangle";
+  }
+
+  const className = ParsePodStatus(status);
+
+  switch (className) {
+    case PodStatus.Pending:
+      icon = "fa-circle-notch";
+      spin = true;
+      break;
+    case PodStatus.Success:
+      icon = "fa-check";
+      break;
+    case PodStatus.Failed:
+      icon = "fa-times";
+      break;
+    case PodStatus.Warning:
+      icon = "fa-exclamation-triangle";
+      break;
+    default:
+      spin = false;
+      icon = "fa-question-circle";
+      break;
+  }
+
+  return (
+    <div className={`pod-icon pod-icon--${className}`}>
+      <i className={`fa ${icon} ${spin ? "fa-spin" : ""}`} />
+    </div>
   );
 };
 
@@ -186,8 +253,9 @@ const Containers = (props: { containers: any }) => {
             alignItems: "center",
             whiteSpace: "nowrap",
           }}
+          key={i}
         >
-          <div style={{ paddingRight: "20px" }}>{container.name}</div>
+          <div style={{ paddingRight: "20px" }}>{container?.name}</div>
           <div
             style={{
               width: "100%",
@@ -197,18 +265,21 @@ const Containers = (props: { containers: any }) => {
               justifyContent: "flex-end",
             }}
           >
-            <InfoItem content={container.image} />
+            <InfoItem content={container?.image} />
           </div>
         </div>
       ))}
       {(containers || []).length < 2 && (
-        <Filler style={{ paddingBottom: "1em", height: "100%" }}>
+        <div
+          className="filler"
+          style={{ paddingBottom: "1em", height: "100%" }}
+        >
           <span style={{ marginRight: "5px" }}></span>
           <span style={{ marginRight: "5px" }}>
             <i className="fa fa-boxes" />
           </span>
           Add more containers to fill this space!
-        </Filler>
+        </div>
       )}
     </Box>
   );
@@ -257,7 +328,7 @@ const Step = (props: {
   }
 
   return (
-    <React.Fragment>
+    <div>
       <EffectDiv
         className={`steps__step ${
           props.complete ? "steps__step--complete" : ""
@@ -266,8 +337,8 @@ const Step = (props: {
         <i className={`fa ${icon}`} /> {content}
         {unit}
       </EffectDiv>
-      {!props.last && <ThemeDiv className="steps__connector" />}
-    </React.Fragment>
+      {!props.last && <div className="steps__connector" />}
+    </div>
   );
 };
 
@@ -278,7 +349,6 @@ export const Extension = (props: {
 }) => {
   const { resource, state, tree } = props as any;
   const { spec, status } = state;
-  console.log(spec, status);
 
   const replicaSets = GetReplicaSets(tree, resource);
   const revisions = GetRevisions(replicaSets);
@@ -294,7 +364,7 @@ export const Extension = (props: {
   }
 
   return (
-    <React.Fragment>
+    <div>
       <CenteredRow>
         <Box>
           <BoxTitle>Summary</BoxTitle>
@@ -331,24 +401,27 @@ export const Extension = (props: {
             )}
           </div>
         </Box>
-        <Containers containers={spec.template.spec.containers} />
+        <Containers containers={spec?.template?.spec.containers} />
       </CenteredRow>
 
       <CenteredRow>
         {replicaSets && replicaSets.length > 0 && (
-          <Box style={{ height: "max-content", width: "550px" }}>
+          <div
+            className="argo-box"
+            style={{ height: "max-content", width: "550px" }}
+          >
             <BoxTitle>Revisions</BoxTitle>
             <div style={{ marginTop: "1em" }}>
               {revisions.map((r, i) => (
                 <RevisionWidget key={i} revision={r} current={i === 0} />
               ))}
             </div>
-          </Box>
+          </div>
         )}
         {(strategy || "").toLowerCase() === "canary" &&
           spec.strategy.canary.steps &&
           spec.strategy.canary.steps.length > 0 && (
-            <Box className="steps" style={{ width: "250px" }}>
+            <div className="argo-box steps" style={{ width: "250px" }}>
               <BoxTitle>Steps</BoxTitle>
               <div style={{ marginTop: "1em" }}>
                 {(spec.strategy.canary.steps || []).map(
@@ -363,11 +436,11 @@ export const Extension = (props: {
                   )
                 )}
               </div>
-            </Box>
+            </div>
           )}
       </CenteredRow>
-    </React.Fragment>
+    </div>
   );
 };
 
-export default Extension;
+export const component = Extension;

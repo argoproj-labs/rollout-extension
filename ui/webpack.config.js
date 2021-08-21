@@ -5,16 +5,17 @@ const config = {
     extension: "./src/Extension.tsx",
   },
   output: {
-    filename: "[name].js",
-    path: __dirname + "/dist",
-    libraryTarget: "umd",
-    library: "Extension",
+    filename: "extensions.js",
+    path: __dirname + "/",
+    libraryTarget: "window",
+    library: ["extensions", "argoproj.io-Rollout"],
   },
   resolve: {
     extensions: [".ts", ".tsx", ".js", ".json", ".ttf"],
-    alias: { react: require.resolve("react") },
   },
-
+  externals: {
+    react: "React", 
+  },
   module: {
     rules: [
       {
