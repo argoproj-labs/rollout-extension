@@ -13,10 +13,6 @@ import "./Extension.scss";
 
 interface ApplicationResourceTree {}
 
-interface Rollout {
-  name: string;
-}
-
 const GetCurrentSetWeight = (spec: any, status: any) => {
   for (let i = status.currentStepIndex; i >= 0; i--) {
     const step = spec.strategy.canary.steps[i];
@@ -344,11 +340,10 @@ const Step = (props: {
 
 export const Extension = (props: {
   tree: ApplicationResourceTree;
-  resource: Rollout;
-  state: any;
+  resource: { status: any; spec: any };
 }) => {
-  const { resource, state, tree } = props as any;
-  const { spec, status } = state;
+  const { resource, tree } = props as any;
+  const { spec, status } = resource;
 
   const replicaSets = GetReplicaSets(tree, resource);
   const revisions = GetRevisions(replicaSets);
