@@ -2,11 +2,11 @@ const path = require("path");
 
 const config = {
   entry: {
-    extension: "./src/Extension.tsx",
+    extension: "./src/index.tsx",
   },
   output: {
     filename: "extensions.js",
-    path: __dirname + "/dist/",
+    path: __dirname + "/dist",
     libraryTarget: "window",
     library: ["extensions", "argoproj.io-Rollout"],
   },
@@ -20,19 +20,19 @@ const config = {
     rules: [
       {
         test: /\.tsx?$/,
-        loaders: [
-          `ts-loader?allowTsInNodeModules=true&configFile=${path.resolve(
-            "./src/tsconfig.json"
-          )}`,
-        ],
+        loader: 'ts-loader',
+        options: {
+          allowTsInNodeModules: true,
+          configFile: path.resolve("./src/tsconfig.json")
+        },
       },
       {
         test: /\.scss$/,
-        loader: "style-loader!raw-loader!sass-loader",
+        use: ["style-loader", "raw-loader", "sass-loader"],
       },
       {
         test: /\.css$/,
-        loader: "style-loader!raw-loader",
+        use: ["style-loader", "raw-loader"],
       },
     ],
   },
