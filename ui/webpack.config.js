@@ -6,7 +6,7 @@ const config = {
   },
   output: {
     filename: "extensions.js",
-    path: __dirname + "/",
+    path: __dirname + "/dist/",
     libraryTarget: "window",
     library: ["extensions", "argoproj.io-Rollout"],
   },

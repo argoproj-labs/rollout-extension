@@ -1,0 +1,24 @@
+apiVersion: extension.argoproj.io/v1
+kind: ArgoCDExtension
+metadata:
+  name: rollout
+spec:
+  ui:
+    - type: Tab
+      href: https://github.com/pathtorolloutjs
+      target:
+        group: argoproj.io
+        kinds:
+          - Rollout
+    - type: Tab
+      href: https://github.com/pathtoanalysisjs
+      target:
+        group: argoproj.io
+        kinds:
+          - AnalysisRun
+    - type: Sidebar
+      href: https://githhub.com/pathtosidebarjs
+      target:
+        path: /applications
+    - type: View
+      href: https://githhub.com/pathtoviewjs
