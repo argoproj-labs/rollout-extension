@@ -3,8 +3,8 @@ name: Release
 on:
   workflow_dispatch:
     inputs:
-      targetBranch:
-        description: "The existing branch name to release from"
+      tag:
+        description: "Git tag to build release from"
 
 jobs:
   build-ui:
@@ -20,23 +20,12 @@ jobs:
       - name: Build UI asset
         run: yarn --cwd ui build
 
-      - name: Create GitHub release
-        uses: actions/create-release@v1
+      - name: Draft release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ github.event.inputs.tag }}
+          draft: true
+          files: |
+            ui/dist/extensions.js
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        id: create_release
-        with:
-          tag_name: ${{ env.RELEASE_TAG }}
-          release_name: ${{ env.RELEASE_TAG }}
-          draft: ${{ env.DRAFT_RELEASE }}
-          prerelease: ${{ env.PRE_RELEASE }}
-          body: ${{ steps.release-notes.outputs.content }}
-
-      - name: Upload extensions.js to release assets
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./ui/dist/extensions.js
-          asset_name: rollout-extension.js
