@@ -8,7 +8,7 @@ const config = {
     filename: "extensions.js",
     path: __dirname + "/dist",
     libraryTarget: "window",
-    library: ["extensions", "argoproj.io-Rollout"],
+    library: ["extensions", "resources", "argoproj.io/Rollout"],
   },
   resolve: {
     extensions: [".ts", ".tsx", ".js", ".json", ".ttf"],
