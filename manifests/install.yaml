@@ -10,4 +10,4 @@ spec:
       group: argoproj.io
       kind: Rollout
   source:
-    file: https://github.com/rbreeze/rollout-extension/releases/download/v0.1/extensions.js
+    file: https://github.com/rbreeze/rollout-extension/releases/download/v0.2/extensions.js
