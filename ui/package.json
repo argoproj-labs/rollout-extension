@@ -18,7 +18,7 @@
   },
   "scripts": {
     "start": "webpack --config ./webpack.config.js --watch",
-    "build": "webpack --config ./webpack.config.js && tar -cvf dist/extension.tar dist/extension"
+    "build": "webpack --config ./webpack.config.js && tar -C dist -cvf dist/extension.tar resources"
   },
   "eslintConfig": {
     "extends": [

@@ -1,20 +1,22 @@
-const path = require("path");
+const path = require('path');
+
+const groupKind = 'argoproj.io/Rollout';
 
 const config = {
   entry: {
-    extension: "./src/index.tsx",
+    extension: './src/index.tsx',
   },
   output: {
-    filename: "extensions.js",
-    path: __dirname + "/dist/extension/argoproj.io/Rollout",
-    libraryTarget: "window",
-    library: ["extensions", "resources", "argoproj.io/Rollout"],
+    filename: 'extensions.js',
+    path: __dirname + `/dist/resources/${groupKind}/ui`,
+    libraryTarget: 'window',
+    library: ['extensions', 'resources', groupKind],
   },
   resolve: {
-    extensions: [".ts", ".tsx", ".js", ".json", ".ttf"],
+    extensions: ['.ts', '.tsx', '.js', '.json', '.ttf'],
   },
   externals: {
-    react: "React", 
+    react: 'React',
   },
   module: {
     rules: [
@@ -23,16 +25,16 @@ const config = {
         loader: 'ts-loader',
         options: {
           allowTsInNodeModules: true,
-          configFile: path.resolve("./src/tsconfig.json")
+          configFile: path.resolve('./src/tsconfig.json')
         },
       },
       {
         test: /\.scss$/,
-        use: ["style-loader", "raw-loader", "sass-loader"],
+        use: ['style-loader', 'raw-loader', 'sass-loader'],
       },
       {
         test: /\.css$/,
-        use: ["style-loader", "raw-loader"],
+        use: ['style-loader', 'raw-loader'],
       },
     ],
   },
