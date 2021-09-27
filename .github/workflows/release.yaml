@@ -26,6 +26,6 @@ jobs:
           tag_name: ${{ github.event.inputs.tag }}
           draft: true
           files: |
-            ui/dist/extensions.js
+            ui/dist/extension.tar
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
