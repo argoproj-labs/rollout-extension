@@ -79,10 +79,10 @@ const parseCurrentCanaryStep = (
   return { currentStep, currentStepIndex };
 };
 
-const parseCurrentSetWeight = (resource: State, currentStepIndex: number) => {
+const parseCurrentSetWeight = (resource: State, currentStepIndex: number): string => {
   const { status, spec } = resource;
   if (status.abort) {
-    return 0;
+    return "0";
   }
 
   for (let i = currentStepIndex; i >= 0; i--) {
@@ -91,7 +91,7 @@ const parseCurrentSetWeight = (resource: State, currentStepIndex: number) => {
       return step.setWeight;
     }
   }
-  return 0;
+  return "0";
 };
 
 const parseRevision = (rs: any) => {
