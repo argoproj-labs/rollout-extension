@@ -20,10 +20,10 @@ const parseInfoFromResourceNode = (
   if (spec.strategy.canary) {
     ro.strategy = "Canary";
     const steps = spec.strategy?.canary?.steps || [];
+    ro.steps = steps;
 
     if (status.currentStepIndex && steps.length > 0) {
       ro.step = `${status.currentStepIndex}/${steps.length}`;
-      ro.steps = steps;
     }
 
     const { currentStep, currentStepIndex } = parseCurrentCanaryStep(resource);
@@ -56,7 +56,6 @@ const parseInfoFromResourceNode = (
   ro.current = status.replicas;
   ro.updated = status.updatedReplicas;
   ro.available = status.availableReplicas;
-  console.log(ro);
   return ro;
 };
 
