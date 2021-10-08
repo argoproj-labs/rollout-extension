@@ -1,10 +1,17 @@
-Before you install:
+Rollout Extension
+-----------------
 
-- Ensure you are in the `argocd` namespace
-- Ensure you have [Argo CD Extensions](https://github.com/argoproj-labs/argocd-extensions) installed in your cluster
+The project introduces the Argo Rollout dashboard into the Argo CD Web UI.
 
-Then:
+![image](https://user-images.githubusercontent.com/426437/136460261-00d3dc31-ad20-4044-a7be-091803b8678f.png)
+
+# Quick Start
+
+- Install Argo CD and Argo CD Extensions Controller: https://github.com/argoproj-labs/argocd-extensions
+- Create `argo-rollouts` extension in `argocd` namespace
 
 ```
-k apply -f manifests/install.yaml
+kubectl apply -n argocd \
+    -f https://raw.githubusercontent.com/argoproj-labs/rollout-extension/v0.1.0/manifests/install.yaml
 ```
+
