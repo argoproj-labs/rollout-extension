@@ -3,7 +3,10 @@
   "version": "0.1.0",
   "private": false,
   "dependencies": {
+    "@types/classnames": "2.2.9",
+    "@types/react-form": "2.16",
     "argo-rollouts": "git+https://github.com/argoproj/argo-rollouts.git",
+    "classnames": "2.2.6",
     "react-scripts": "4.0.3",
     "web-vitals": "^1.0.1"
   },
@@ -53,5 +56,8 @@
     "ts-loader": "8.2.0",
     "typescript": "^4.3.5",
     "webpack-cli": "^4.7.2"
+  },
+  "resolutions": {
+    "classnames": "2.2.6"
   }
 }
