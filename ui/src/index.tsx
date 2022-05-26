@@ -64,8 +64,8 @@ const parseCurrentCanaryStep = (
 ): { currentStep: any; currentStepIndex: number } => {
   const { status, spec } = resource;
   const canary = spec.strategy?.canary;
-  if (!canary || canary.steps.length === 0) {
-    return null;
+  if (!canary || !canary.steps || canary.steps.length === 0) {
+    return { currentStep: null, currentStepIndex: -1 };
   }
   let currentStepIndex = 0;
   if (status.currentStepIndex) {
