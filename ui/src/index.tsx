@@ -1,7 +1,7 @@
 import * as React from "react";
 import { RolloutWidget } from "argo-rollouts/ui/src/app/components/rollout/rollout";
 import { ObjectMeta, TypeMeta } from "argo-rollouts/ui/src/models/kubernetes";
-import { RolloutRolloutInfo } from "argo-rollouts/ui/src/models/rollout/generated";
+import { RolloutRolloutInfo, RolloutReplicaSetInfo, RolloutAnalysisRunInfo } from "argo-rollouts/ui/src/models/rollout/generated";
 
 export type State = TypeMeta & { metadata: ObjectMeta } & {
   status: any;
@@ -15,6 +15,7 @@ const parseInfoFromResourceNode = (
   const ro: RolloutRolloutInfo = {};
   const { spec, status, metadata } = resource;
   ro.objectMeta = metadata as any;
+  ro.analysisRuns = parseAnalysisRuns(tree, resource);
   ro.replicaSets = parseReplicaSets(tree, resource);
 
   if (spec.strategy.canary) {
@@ -93,8 +94,8 @@ const parseCurrentSetWeight = (resource: State, currentStepIndex: number): strin
   return "0";
 };
 
-const parseRevision = (rs: any) => {
-  for (const item of rs.info || []) {
+const parseRevision = (node: any) => {
+  for (const item of node.info || []) {
     if (item.name === "Revision") {
       const parts = item.value.split(":") || [];
       return parts.length == 2 ? parts[1] : "0";
@@ -110,7 +111,36 @@ const parsePodStatus = (pod: any) => {
   }
 };
 
-const parseReplicaSets = (tree: any, rollout: any) => {
+const parseAnalysisRuns = (tree: any, rollout: any): RolloutAnalysisRunInfo[] => tree.nodes
+    .filter(node => (node.kind === 'AnalysisRun') && (node.parentRefs.some(ref => ref.name === rollout.metadata.name)))
+    .map(node => ({
+      objectMeta: {
+        creationTimestamp: {
+          seconds: node.createdAt,
+        },
+        name: node.name,
+        namespace: node.namespace,
+        resourceVersion: node.version,
+        uid: node.uid,
+      },
+      revision: parseRevision(node),
+      status: parseAnalysisRunStatus(node.health.status),
+    }) as RolloutAnalysisRunInfo);
+
+const parseAnalysisRunStatus = (status: string): string => {
+  switch(status) {
+    case 'Healthy':
+      return 'Successful';
+    case 'Progressing':
+      return 'Running';
+    case 'Degraded':
+      return 'Failure';
+    default:
+      return 'Error';
+  }
+}
+
+const parseReplicaSets = (tree: any, rollout: any): RolloutReplicaSetInfo[] => {
   const allReplicaSets = [];
   const allPods = [];
   for (const node of tree.nodes) {
