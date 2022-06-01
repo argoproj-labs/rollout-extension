@@ -133,6 +133,7 @@ const parseReplicaSets = (tree: any, rollout: any) => {
           name: rs.name,
           uid: rs.uid,
         };
+        rs.status = rs.health.status,
         rs.revision = parseRevision(rs);
         ownedReplicaSets[rs?.name] = rs;
       }
