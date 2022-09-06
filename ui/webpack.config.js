@@ -29,6 +29,11 @@ const config = {
         },
       },
       {
+        // prevent overriding global page styles
+        test: path.resolve(__dirname, 'node_modules/argo-ui/src/components/page/page.scss'),
+        use: 'null-loader',
+      },
+      {
         test: /\.scss$/,
         use: ['style-loader', 'raw-loader', 'sass-loader'],
       },
