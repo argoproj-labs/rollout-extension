@@ -7,6 +7,7 @@
     "@types/react-form": "2.16",
     "argo-rollouts": "git+https://github.com/argoproj/argo-rollouts.git",
     "classnames": "2.2.6",
+    "null-loader": "^4.0.1",
     "react-scripts": "4.0.3",
     "web-vitals": "^1.0.1"
   },
