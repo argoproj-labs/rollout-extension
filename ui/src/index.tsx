@@ -22,7 +22,7 @@ const parseInfoFromResourceNode = (
     const steps = spec.strategy?.canary?.steps || [];
     ro.steps = steps;
 
-    if (status.currentStepIndex && steps.length > 0) {
+    if (steps && status.currentStepIndex && steps.length > 0) {
       ro.step = `${status.currentStepIndex}/${steps.length}`;
     }
 
@@ -49,8 +49,10 @@ const parseInfoFromResourceNode = (
   }
 
   ro.containers = [];
-  for (const c of spec.template?.spec?.containers) {
-    ro.containers.push({ name: c.name, image: c.image });
+  if (spec.template) {
+    for (const c of spec.template?.spec?.containers) {
+      ro.containers.push({ name: c.name, image: c.image });
+    }
   }
 
   ro.current = status.replicas;
@@ -64,8 +66,8 @@ const parseCurrentCanaryStep = (
 ): { currentStep: any; currentStepIndex: number } => {
   const { status, spec } = resource;
   const canary = spec.strategy?.canary;
-  if (!canary || canary.steps.length === 0) {
-    return null;
+  if (!canary || !canary.steps || canary.steps.length === 0) {
+    return { currentStep: null, currentStepIndex: -1 };
   }
   let currentStepIndex = 0;
   if (status.currentStepIndex) {
