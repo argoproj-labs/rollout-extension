@@ -12,6 +12,6 @@ The project introduces the Argo Rollout dashboard into the Argo CD Web UI.
 
 ```
 kubectl apply -n argocd \
-    -f https://raw.githubusercontent.com/argoproj-labs/rollout-extension/v0.1.0/manifests/install.yaml
+    -f https://raw.githubusercontent.com/argoproj-labs/rollout-extension/master/manifests/install.yaml
 ```
 
