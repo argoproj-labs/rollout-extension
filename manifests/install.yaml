@@ -7,4 +7,4 @@ metadata:
 spec:
   sources:
   - web:
-      url: https://github.com/alexef/rollout-extension/releases/download/v0.2.2/extension.tar
+      url: https://github.com/argoproj-labs/rollout-extension/releases/download/v0.2.1/extension.tar
