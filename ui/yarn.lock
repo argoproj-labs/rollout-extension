@@ -2430,7 +2430,7 @@ aproba@^1.1.1:
 
 "argo-ui@git+https://github.com/argoproj/argo-ui.git":
   version "1.0.0"
-  resolved "git+https://github.com/argoproj/argo-ui.git#72daa60c552fb8d1ded30c8448e35aced2957ec5"
+  resolved "git+https://github.com/argoproj/argo-ui.git#7367406dbc6817dcab1719f3cde410093eb9908f"
   dependencies:
     "@fortawesome/fontawesome-free" "^5.15.2"
     "@tippy.js/react" "^2.1.2"
