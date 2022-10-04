@@ -2426,7 +2426,7 @@ aproba@^1.1.1:
 
 "argo-rollouts@git+https://github.com/argoproj/argo-rollouts.git":
   version "0.0.0"
-  resolved "git+https://github.com/argoproj/argo-rollouts.git#df8af6de84b9ff63bb3b6710f1c8ae4a54edd91b"
+  resolved "git+https://github.com/argoproj/argo-rollouts.git#3321a89aa91352df816987aa6421a474928e33ee"
 
 "argo-ui@git+https://github.com/argoproj/argo-ui.git":
   version "1.0.0"
