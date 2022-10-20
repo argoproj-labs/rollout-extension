@@ -202,11 +202,11 @@ const parseReplicaSets = (tree: any, rollout: any): RolloutReplicaSetInfo[] => {
   });
 };
 
-const parseWorkloadRef = (tree: any, rollout: any): State =>
+const parseWorkloadRef = (tree: any, rollout: any): State | undefined =>
   (tree.nodes.find(
     (node) =>
       node.kind === "Deployment" && node.name === rollout.spec.workloadRef.name
-  ) as State) || {};
+  ) as State);
 
 interface ApplicationResourceTree {}
 export const Extension = (props: {
