@@ -54,6 +54,13 @@ const parseInfoFromResourceNode = (
     for (const c of spec.template?.spec?.containers) {
       ro.containers.push({ name: c.name, image: c.image });
     }
+  } else if (spec.workloadRef) {
+    const deployment = parseWorkloadRef(tree, resource);
+    if (deployment && deployment.spec) {
+      for (const c of deployment.spec.template?.spec?.containers) {
+        ro.containers.push({ name: c.name, image: c.image });
+      }
+    }
   }
 
   ro.current = status.replicas;
@@ -194,6 +201,12 @@ const parseReplicaSets = (tree: any, rollout: any): RolloutReplicaSetInfo[] => {
     return rs;
   });
 };
+
+const parseWorkloadRef = (tree: any, rollout: any): State =>
+  (tree.nodes.find(
+    (node) =>
+      node.kind === "Deployment" && node.name === rollout.spec.workloadRef.name
+  ) as State) || {};
 
 interface ApplicationResourceTree {}
 export const Extension = (props: {
