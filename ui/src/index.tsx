@@ -199,9 +199,10 @@ interface ApplicationResourceTree {}
 export const Extension = (props: {
   tree: ApplicationResourceTree;
   resource: State;
+  application: any;                          
 }) => {
   const ro = parseInfoFromResourceNode(props.tree, props.resource);
-  return <RolloutWidget rollout={ro} />;
+  return <RolloutWidget rollout={ro} appName={props.application.metadata.name}/>;
 };
 
 export const component = Extension;
