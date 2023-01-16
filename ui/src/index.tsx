@@ -23,7 +23,7 @@ const parseInfoFromResourceNode = (
     const steps = spec.strategy?.canary?.steps || [];
     ro.steps = steps;
 
-    if (steps && status.currentStepIndex && steps.length > 0) {
+    if (steps && status.currentStepIndex !== null && steps.length > 0) {
       ro.step = `${status.currentStepIndex}/${steps.length}`;
     }
 
