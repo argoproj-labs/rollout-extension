@@ -160,14 +160,16 @@ const parseReplicaSets = (tree: any, rollout: any): RolloutReplicaSetInfo[] => {
         parentRef?.kind === "Rollout" &&
         parentRef?.name === rollout?.metadata?.name
       ) {
-        rs.pods = [];
-        rs.objectMeta = {
-          name: rs.name,
-          uid: rs.uid,
-        };
-        rs.status = rs.health.status,
-        rs.revision = parseRevision(rs);
-        ownedReplicaSets[rs?.name] = rs;
+        let ownedRS = {
+          pods: [],
+          objectMeta: {
+            name: rs.name,
+            uid: rs.uid,
+          },
+          status: rs.health.status,
+          revision: parseRevision(rs),
+        }
+        ownedReplicaSets[rs?.name] = ownedRS;
       }
     }
   }
@@ -175,15 +177,17 @@ const parseReplicaSets = (tree: any, rollout: any): RolloutReplicaSetInfo[] => {
   const podMap: { [key: string]: any[] } = {};
 
   for (const pod of allPods) {
-    pod.objectMeta = {
-      name: pod.name,
-      uid: pod.uid,
-    };
-    pod.status = parsePodStatus(pod);
+    let ownedPod = {
+      objectMeta: {
+        name: pod.name,
+        uid: pod.uid,
+      },
+      status: parsePodStatus(pod),
+    }
     for (const parentRef of pod.parentRefs) {
       const pods = podMap[parentRef?.name] || [];
       if (parentRef.kind === "ReplicaSet" && pods?.length > -1) {
-        pods.push(pod);
+        pods.push(ownedPod);
         podMap[parentRef?.name] = [...pods];
       }
     }
