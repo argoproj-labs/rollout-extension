@@ -21,8 +21,8 @@
     "rxjs": "^6.6.6"
   },
   "scripts": {
-    "start": "webpack --config ./webpack.config.js --watch",
-    "build": "webpack --config ./webpack.config.js && tar -C dist -cvf dist/extension.tar resources"
+    "start": "NODE_OPTIONS=--openssl-legacy-provider webpack --config ./webpack.config.js --watch",
+    "build": "NODE_OPTIONS=--openssl-legacy-provider webpack --config ./webpack.config.js && tar -C dist -cvf dist/extension.tar resources"
   },
   "eslintConfig": {
     "extends": [
