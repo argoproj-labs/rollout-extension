@@ -1,6 +1,6 @@
 const path = require('path');
 
-const extName = "ArgocdRollouts";
+const extName = "Rollout";
 
 const config = {
   entry: {
