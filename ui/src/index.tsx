@@ -208,4 +208,13 @@ export const Extension = (props: {
   return <RolloutWidget rollout={ro} />;
 };
 
-export const component = Extension;
+// Register the component extension in ArgoCD
+((window: any) => {
+  window?.extensionsAPI?.registerResourceExtension(
+    Extension,
+    "*",
+    "Rollout",
+    "Rollout",
+    { icon: "fa-sharp fa-light fa-bars-progress fa-lg" }
+  );
+})(window);
