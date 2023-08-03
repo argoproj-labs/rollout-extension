@@ -1,16 +1,16 @@
 const path = require('path');
 
-const groupKind = 'argoproj.io/Rollout';
+const extName = "Rollout";
 
 const config = {
   entry: {
     extension: './src/index.tsx',
   },
   output: {
-    filename: 'extensions.js',
-    path: __dirname + `/dist/resources/${groupKind}/ui`,
-    libraryTarget: 'window',
-    library: ['extensions', 'resources', groupKind],
+    filename: `extensions-${extName}.js`,
+    path: __dirname + `/dist/resources/extension-${extName}.js`,
+    libraryTarget: "window",
+    library: ["tmp", "extensions"],
   },
   resolve: {
     extensions: ['.ts', '.tsx', '.js', '.json', '.ttf'],
