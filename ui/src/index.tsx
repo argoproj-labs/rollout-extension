@@ -212,10 +212,11 @@ export const component = Extension;
 
 
 ((window: any) => {
-  window.extensionsAPI.registerResourceExtension(
+  window?.extensionsAPI?.registerResourceExtension(
    component,
    "argoproj.io",
    "Rollout",
    "Rollout",
+   { icon: "fa-sharp fa-light fa-bars-progress fa-lg" }
  );
 })(window);
