@@ -212,8 +212,6 @@ export const component = Extension;
 
 
 ((window: any) => {
-  // registerResourceExtension(component: ExtensionComponent, group: string, kind: string, tabTitle: string)
-
   window.extensionsAPI.registerResourceExtension(
    component,
    "argoproj.io",
