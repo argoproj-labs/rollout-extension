@@ -208,7 +208,6 @@ export const Extension = (props: {
   resource: State;
 }) => {
   const ro = parseInfoFromResourceNode(props.tree, props.resource);
-  console.log('ro', ro);
 
   return <RolloutWidget rollout={ro} />;
 };
