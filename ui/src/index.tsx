@@ -1,7 +1,11 @@
 import * as React from "react";
-import { RolloutWidget } from "argo-rollouts/ui/src/app/components/rollout/rollout";
-import { ObjectMeta, TypeMeta } from "argo-rollouts/ui/src/models/kubernetes";
-import { RolloutRolloutInfo, RolloutReplicaSetInfo, RolloutAnalysisRunInfo } from "argo-rollouts/ui/src/models/rollout/generated";
+import {RolloutWidget} from "argo-rollouts/ui/src/app/components/rollout/rollout";
+import {ObjectMeta, TypeMeta} from "argo-rollouts/ui/src/models/kubernetes";
+import {
+  RolloutAnalysisRunInfo,
+  RolloutReplicaSetInfo,
+  RolloutRolloutInfo
+} from "argo-rollouts/ui/src/models/rollout/generated";
 
 export type State = TypeMeta & { metadata: ObjectMeta } & {
   status: any;
@@ -160,20 +164,18 @@ const parseReplicaSets = (tree: any, rollout: any): RolloutReplicaSetInfo[] => {
         parentRef?.kind === "Rollout" &&
         parentRef?.name === rollout?.metadata?.name
       ) {
-        let ownedRS = {
+        ownedReplicaSets[rs?.name] = {
           pods: [],
           objectMeta: {
             name: rs.name,
             uid: rs.uid,
           },
-          status: rs.health.status,
-          revision: parseRevision(rs),
-        }
-        ownedReplicaSets[rs?.name] = ownedRS;
+          status: rs?.health.status,
+          revision: parseRevision(rs)
+        };
       }
     }
   }
-
   const podMap: { [key: string]: any[] } = {};
 
   for (const pod of allPods) {
@@ -186,15 +188,16 @@ const parseReplicaSets = (tree: any, rollout: any): RolloutReplicaSetInfo[] => {
     }
     for (const parentRef of pod.parentRefs) {
       const pods = podMap[parentRef?.name] || [];
+
       if (parentRef.kind === "ReplicaSet" && pods?.length > -1) {
+
         pods.push(ownedPod);
-        podMap[parentRef?.name] = [...pods];
-      }
+        podMap[parentRef?.name] = [...pods];      }
     }
   }
 
   return (Object.values(ownedReplicaSets) || []).map((rs) => {
-    rs.pods = podMap[rs.name] || [];
+    rs.pods = podMap[rs.objectMeta.name] || [];
     return rs;
   });
 };
@@ -205,6 +208,8 @@ export const Extension = (props: {
   resource: State;
 }) => {
   const ro = parseInfoFromResourceNode(props.tree, props.resource);
+  console.log('ro', ro);
+
   return <RolloutWidget rollout={ro} />;
 };
 
