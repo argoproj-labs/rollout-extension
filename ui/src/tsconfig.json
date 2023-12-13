@@ -4,7 +4,7 @@
     "sourceMap": true,
     "noImplicitAny": false,
     "module": "commonjs",
-    "target": "es5",
+    "target": "es6",
     "jsx": "react",
     "moduleResolution": "node",
     "experimentalDecorators": true,
@@ -15,4 +15,4 @@
   },
   "include": ["./**/*"],
   "exclude": ["node_modules"]
-} 
+}

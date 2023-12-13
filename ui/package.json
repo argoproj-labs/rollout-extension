@@ -6,27 +6,23 @@
     "@fortawesome/fontawesome-svg-core": "^6.4.0",
     "@fortawesome/free-solid-svg-icons": "^6.4.0",
     "@fortawesome/react-fontawesome": "^0.2.0",
-    "antd": "^5.4.2",
-    "argo-rollouts": "git+https://github.com/argoproj/argo-rollouts.git",
-    "argo-ui": "git+https://github.com/argoproj/argo-ui.git",
+    "argo-rollouts": "git+https://github.com/argoproj/argo-rollouts.git#3a257e3740312fc826606d2fd408beb51f7900cf",
+    "argo-ui": "git+https://github.com/argoproj/argo-ui.git#5ff344ac9692c14dd108468bd3c020c3c75181cb",
     "classnames": "2.2.6",
     "null-loader": "^4.0.1",
-    "react": "^17.0.2",
-    "react-dom": "^16.14.0",
+    "react": "^16.9.3",
+    "react-dom": "^16.9.3",
     "react-helmet": "^6.1.0",
     "react-router-dom": "5.2.0",
     "react-scripts": "4.0.3",
-    "rxjs": "^7.1.0",
     "ts-loader": "^8.2.0",
     "typescript": "^4.9.5",
     "web-vitals": "^1.0.1"
   },
   "peerDeependencies": {
-    "argo-ui": "git+https://github.com/argoproj/argo-ui.git",
-    "@types/react": "^16.14.0",
-    "@types/react-dom": "^17.0.2",
-    "react": "^16.9.3",
-    "rxjs": "^6.6.6"
+    "argo-ui": "git+https://github.com/argoproj/argo-ui.git#5ff344ac9692c14dd108468bd3c020c3c75181cb",
+    "@types/react": "^16.9.3",
+    "react": "^16.9.3"
   },
   "scripts": {
     "start": "NODE_OPTIONS=--openssl-legacy-provider webpack --config ./webpack.config.js --watch",
@@ -50,14 +46,13 @@
     ]
   },
   "devDependencies": {
-    "@types/react": "^17.0.19",
-    "@types/react-dom": "^17.0.9",
+    "@types/react": "^16.9.3",
+    "@types/react-dom": "^16.9.3",
     "@types/react-helmet": "^6.1.0",
     "@types/react-router-dom": "^5.1.7",
-    "argo-ui": "git+https://github.com/argoproj/argo-ui.git",
     "babel-preset-react": "^6.24.1",
     "portable-fetch": "^3.0.0",
-    "raw-loader": "^0.5.1",
+    "raw-loader": "^4.0.2",
     "react-keyhooks": "^0.2.3",
     "rxjs": "^7.1.0",
     "sass": "^1.34.1",
@@ -65,7 +60,6 @@
     "webpack-cli": "^4.9.2"
   },
   "resolutions": {
-    "classnames": "2.2.6",
-    "react-toastify": "5.0.1"
+    "@types/react": "16.9.3"
   }
 }
