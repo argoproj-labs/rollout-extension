@@ -2,7 +2,7 @@ import * as React from 'react';
 import {RolloutWidget} from 'argo-rollouts/ui/src/app/components/rollout/rollout';
 import {ObjectMeta, TypeMeta} from 'argo-rollouts/ui/src/models/kubernetes';
 import {RolloutAnalysisRunInfo, RolloutReplicaSetInfo, RolloutRolloutInfo} from 'argo-rollouts/ui/src/models/rollout/generated';
-import axios from 'axios';
+import { default as axios } from 'axios';
 
 export type State = TypeMeta & {metadata: ObjectMeta} & {
     status: any;
