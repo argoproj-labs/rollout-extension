@@ -10,9 +10,12 @@
     "experimentalDecorators": true,
     "noUnusedLocals": true,
     "declaration": false,
-    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": false,
+    "allowSyntheticDefaultImports": true,    
+    "resolveJsonModule": true,
+    "downlevelIteration": true ,
     "lib": ["es2017", "dom"]
   },
   "include": ["./**/*"],
   "exclude": ["node_modules"]
-}
+} 
