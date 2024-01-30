@@ -7,11 +7,8 @@ The project introduces the Argo Rollout dashboard into the Argo CD Web UI.
 
 ## Install UI extension
 
-The UI extension needs to be installed by mounting the React component
-in Argo CD API server. This process can be automated by using the
-[argocd-extension-installer][1]. This installation method will run an
-init container that will download, extract and place the file in the
-correct location.
+To install the extension use the [argocd-extension-installer](https://github.com/argoproj-labs/argocd-extension-installer) init container which runs during the startup of the argocd server.
+The init container downloads and extracts the JS file to `/tmp/extensions`. The argocd interface mounts the external JS file within the rollout resource.
 
 The yaml file below is an example of how to define a kustomize patch
 to install this UI extension:
