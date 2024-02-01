@@ -1,5 +1,4 @@
-Rollout Extension
------------------
+# Rollout Extension
 
 The project introduces the Argo Rollout dashboard into the Argo CD Web UI.
 
@@ -10,8 +9,8 @@ The project introduces the Argo Rollout dashboard into the Argo CD Web UI.
 To install the extension use the [argocd-extension-installer](https://github.com/argoproj-labs/argocd-extension-installer) init container which runs during the startup of the argocd server.
 The init container downloads and extracts the JS file to `/tmp/extensions`. The argocd interface mounts the external JS file within the rollout resource.
 
-The yaml file below is an example of how to define a kustomize patch
-to install this UI extension:
+
+### Kustomize Patch
 
 ```yaml
 apiVersion: apps/v1
@@ -41,4 +40,45 @@ spec:
       volumes:
         - name: extensions
           emptyDir: {}
+```
+
+### Helm Values
+
+#### Using `server.extensions`
+
+```yaml
+server:
+  extensions:
+    enabled: true
+    extensionList:
+      - name: rollout-extension
+        env:
+          - name: EXTENSION_URL
+            value: https://github.com/argoproj-labs/rollout-extension/releases/download/v0.3.4/extension.tar
+```
+
+#### Using `server.initContainers`, `server.volumeMounts`, and `server.volumes` directly
+kubectl apply -f https://raw.githubusercontent.com/argoproj/argo-rollouts/master/docs/getting-started/basic/rollout.yaml
+kubectl apply -f https://raw.githubusercontent.com/argoproj/argo-rollouts/master/docs/getting-started/basic/service.yaml
+
+```yaml
+server:
+  initContainers:
+    - name: rollout-extension
+      image: quay.io/argoprojlabs/argocd-extension-installer:v0.0.1
+      env:
+      - name: EXTENSION_URL
+        value: https://github.com/argoproj-labs/rollout-extension/releases/download/v0.3.4/extension.tar
+      volumeMounts:
+        - name: extensions
+          mountPath: /tmp/extensions/
+      securityContext:
+        runAsUser: 1000
+        allowPrivilegeEscalation: false
+  volumeMounts:
+    - name: extensions
+      mountPath: /tmp/extensions/
+  volumes:
+    - name: extensions
+      emptyDir: {}
 ```
