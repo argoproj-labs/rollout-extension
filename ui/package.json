@@ -6,13 +6,12 @@
     "@fortawesome/fontawesome-svg-core": "^6.4.0",
     "@fortawesome/free-solid-svg-icons": "^6.4.0",
     "@fortawesome/react-fontawesome": "^0.2.0",
-    "argo-rollouts": "git+https://github.com/argoproj/argo-rollouts.git#0eff316b85296ffcaae6306a91d4b7db78f63a86",
+    "argo-rollouts": "git+https://github.com/argoproj/argo-rollouts.git#b0d74e5def390e8d7f33fb98c7450519037d30be",
     "argo-ui": "git+https://github.com/argoproj/argo-ui.git#5ff344ac9692c14dd108468bd3c020c3c75181cb",
     "classnames": "2.2.6",
     "json-loader": "^0.5.7",
     "axios": "^1.6.2",
     "recharts": "^2.9.0",
-
     "null-loader": "^4.0.1",
     "react": "^16.9.3",
     "react-dom": "^16.9.3",
@@ -21,7 +20,8 @@
     "react-scripts": "4.0.3",
     "ts-loader": "^8.2.0",
     "typescript": "^4.9.5",
-    "web-vitals": "^1.0.1"
+    "web-vitals": "^1.0.1",
+    "isomorphic-fetch": "^3.0.0"
   },
   "peerDeependencies": {
     "argo-ui": "git+https://github.com/argoproj/argo-ui.git#5ff344ac9692c14dd108468bd3c020c3c75181cb",
@@ -64,5 +64,6 @@
   },
   "resolutions": {
     "@types/react": "16.9.3"
-  }
+  },
+  "packageManager": "yarn@1.22.22+sha512.a6b2f7906b721bba3d67d4aff083df04dad64c399707841b7acf00f6b133b7ac24255f2652fa22ae3534329dc6180534e98d17432037ff6fd140556e2bb3137e"
 }
