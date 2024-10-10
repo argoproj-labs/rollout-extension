@@ -111,6 +111,13 @@ const parsePodStatus = (pod: any) => {
     }
 };
 
+const parsePodReady = (pod: any) => {
+    for (const item of pod.info || []) {
+        if (item.name === "Containers") {
+            return item.value;
+        }
+    }
+}
 const parseAnalysisRuns = (app: any, tree: any, rollout: any): RolloutAnalysisRunInfo[] => {
     const [analysisRunResults, setAnalysisRunResults] = React.useState<RolloutAnalysisRunInfo[]>([]);
     const [analysisRunNodeIds, setAnalysisRunNodeIds] = React.useState<string[]>([]);
@@ -209,6 +216,7 @@ const parseReplicaSets = (tree: any, rollout: any): RolloutReplicaSetInfo[] => {
                             images: pod.images,
                             status: parsePodStatus(pod),
                             revision: parseRevision(rs),
+                            ready: parsePodReady(pod),
                             canary: true
                         };
                         pods.push(ownedPod);
