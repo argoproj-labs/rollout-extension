@@ -6,7 +6,7 @@
     "@fortawesome/fontawesome-svg-core": "^6.4.0",
     "@fortawesome/free-solid-svg-icons": "^6.4.0",
     "@fortawesome/react-fontawesome": "^0.2.0",
-    "argo-rollouts": "git+https://github.com/argoproj/argo-rollouts.git#b0d74e5def390e8d7f33fb98c7450519037d30be",
+    "argo-rollouts": "git+https://github.com/argoproj/argo-rollouts.git#a4d50d8e65d5fa33a6e7f33f43be9a3df83b06f7",
     "argo-ui": "git+https://github.com/argoproj/argo-ui.git#5ff344ac9692c14dd108468bd3c020c3c75181cb",
     "classnames": "2.2.6",
     "json-loader": "^0.5.7",
