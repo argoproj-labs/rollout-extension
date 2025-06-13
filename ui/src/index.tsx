@@ -19,9 +19,9 @@ const parseInfoFromResourceNode = (app: any, tree: any, resource: State) => {
 
     ro.replicaSets = parseReplicaSets(tree, resource);
 
-    if (spec.strategy.canary) {
+    if (spec.strategy?.canary) {
         ro.strategy = 'Canary';
-        const steps = spec.strategy?.canary?.steps || [];
+        const steps = spec.strategy.canary.steps || [];
         ro.steps = steps;
 
         if (steps && status.currentStepIndex !== null && steps.length > 0) {
@@ -222,7 +222,7 @@ const parseReplicaSets = (tree: any, rollout: any): RolloutReplicaSetInfo[] => {
                         pods.push(ownedPod);
                     }
                 }
-                ownedReplicaSets[rs?.name] = {
+                ownedReplicaSets[rs.name] = {
                     objectMeta: {
                         name: rs.name,
                         uid: rs.uid,
