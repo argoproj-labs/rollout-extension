@@ -22,10 +22,10 @@ spec:
     spec:
       initContainers:
         - name: rollout-extension
-          image: quay.io/argoprojlabs/argocd-extension-installer:v0.0.1
+          image: quay.io/argoprojlabs/argocd-extension-installer:v0.0.8
           env:
           - name: EXTENSION_URL
-            value: https://github.com/argoproj-labs/rollout-extension/releases/download/v0.3.4/extension.tar
+            value: https://github.com/argoproj-labs/rollout-extension/releases/download/v0.3.7/extension.tar
           volumeMounts:
             - name: extensions
               mountPath: /tmp/extensions/
@@ -54,7 +54,7 @@ server:
       - name: rollout-extension
         env:
           - name: EXTENSION_URL
-            value: https://github.com/argoproj-labs/rollout-extension/releases/download/v0.3.4/extension.tar
+            value: https://github.com/argoproj-labs/rollout-extension/releases/download/v0.3.7/extension.tar
 ```
 
 #### Using `server.initContainers`, `server.volumeMounts`, and `server.volumes` directly
@@ -65,10 +65,10 @@ kubectl apply -f https://raw.githubusercontent.com/argoproj/argo-rollouts/master
 server:
   initContainers:
     - name: rollout-extension
-      image: quay.io/argoprojlabs/argocd-extension-installer:v0.0.1
+      image: quay.io/argoprojlabs/argocd-extension-installer:v0.0.8
       env:
       - name: EXTENSION_URL
-        value: https://github.com/argoproj-labs/rollout-extension/releases/download/v0.3.4/extension.tar
+        value: https://github.com/argoproj-labs/rollout-extension/releases/download/v0.3.7/extension.tar
       volumeMounts:
         - name: extensions
           mountPath: /tmp/extensions/
