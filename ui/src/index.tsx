@@ -1,9 +1,9 @@
-import * as React from 'react';
-import {RolloutWidget} from 'argo-rollouts/ui/src/app/components/rollout/rollout';
-import {ObjectMeta, TypeMeta} from 'argo-rollouts/ui/src/models/kubernetes';
-import {RolloutAnalysisRunInfo, RolloutReplicaSetInfo, RolloutRolloutInfo} from 'argo-rollouts/ui/src/models/rollout/generated';
+import { RolloutWidget } from 'argo-rollouts/ui/src/app/components/rollout/rollout';
+import { ObjectMeta, TypeMeta } from 'argo-rollouts/ui/src/models/kubernetes';
+import { RolloutAnalysisRunInfo, RolloutReplicaSetInfo, RolloutRolloutInfo } from 'argo-rollouts/ui/src/models/rollout/generated';
 import { default as axios } from 'axios';
-import './dark.css'
+import * as React from 'react';
+import './dark.css';
 
 export type State = TypeMeta & {metadata: ObjectMeta} & {
     status: any;
@@ -197,15 +197,66 @@ const parseReplicaSets = (tree: any, rollout: any): RolloutReplicaSetInfo[] => {
         }
     }
 
+    const {spec, status} = rollout;
+    const strategy = spec?.strategy;
+    
+    let stablePodHash = null;
+    let canaryPodHash = null;
+    let activePodHash = null;
+    let previewPodHash = null;
+    
+    if (strategy?.canary) {
+        stablePodHash = status?.canary?.weights?.stable?.podTemplateHash || status?.stableRS || null;
+        canaryPodHash = status?.canary?.weights?.canary?.podTemplateHash || status?.currentPodHash || null;
+    } else if (strategy?.blueGreen) {
+        activePodHash = status?.blueGreen?.activeSelector || status?.stableRS || null;
+        previewPodHash = status?.blueGreen?.previewSelector || status?.currentPodHash || null;
+    }
+
     const ownedReplicaSets: {[key: string]: any} = {};
 
     for (const rs of allReplicaSets) {
         for (const parentRef of rs.parentRefs) {
             if (parentRef?.kind === 'Rollout' && parentRef?.name === rollout?.metadata?.name) {
                 const pods = [];
+                const imagesSet = new Set<string>();
+                const initContainerImagesSet = new Set<string>();
+                
+                const rsPodHash = rs.name.split('-').pop();
+                
+                let isCanary = false;
+                let isStable = false;
+                let isActive = false;
+                let isPreview = false;
+                
+                if (strategy?.canary) {
+                    if (canaryPodHash && stablePodHash && canaryPodHash === stablePodHash) {
+                        isStable = true;
+                        isCanary = false;
+                    } else if (stablePodHash && rsPodHash === stablePodHash) {
+                        isStable = true;
+                        isCanary = false;
+                    } else if (canaryPodHash && rsPodHash === canaryPodHash) {
+                        isCanary = true;
+                        isStable = false;
+                    } else {
+                        isStable = true;
+                        isCanary = false;
+                    }
+                } else if (strategy?.blueGreen) {
+                    if (activePodHash && rsPodHash === activePodHash) {
+                        isActive = true;
+                    } else if (previewPodHash && rsPodHash === previewPodHash) {
+                        isPreview = true;
+                    } else {
+                        isActive = false;
+                        isPreview = false;
+                    }
+                }
+
                 for (const pod of allPods) {
-                    const [parentRef] = pod.parentRefs;
-                    if (parentRef && parentRef.kind === 'ReplicaSet' && parentRef.name === rs.name) {
+                    const [podParentRef] = pod.parentRefs;
+                    if (podParentRef && podParentRef.kind === 'ReplicaSet' && podParentRef.name === rs.name) {
                         const ownedPod = {
                             objectMeta: {
                                 name: pod.name,
@@ -217,11 +268,25 @@ const parseReplicaSets = (tree: any, rollout: any): RolloutReplicaSetInfo[] => {
                             status: parsePodStatus(pod),
                             revision: parseRevision(rs),
                             ready: parsePodReady(pod),
-                            canary: true
+                            canary: isCanary
                         };
+                        
+                        if (Array.isArray(pod.images)) {
+                            for (const image of pod.images) {
+                                imagesSet.add(image);
+                            }
+                        }
+                        
+                        if (Array.isArray(pod.initContainerImages)) {
+                            for (const initImage of pod.initContainerImages) {
+                                initContainerImagesSet.add(initImage);
+                            }
+                        }
+                        
                         pods.push(ownedPod);
                     }
                 }
+                
                 ownedReplicaSets[rs?.name] = {
                     objectMeta: {
                         name: rs.name,
@@ -230,8 +295,14 @@ const parseReplicaSets = (tree: any, rollout: any): RolloutReplicaSetInfo[] => {
                     },
                     status: rs?.health.status,
                     revision: parseRevision(rs),
-                    canary: true
+                    images: Array.from(imagesSet),
+                    initContainerImages: initContainerImagesSet.size > 0 ? Array.from(initContainerImagesSet) : undefined,
+                    canary: isCanary,
+                    stable: isStable,
+                    active: isActive,
+                    preview: isPreview
                 };
+                
                 if (pods.length > 0) {
                     ownedReplicaSets[rs?.name].pods = pods;
                 }
