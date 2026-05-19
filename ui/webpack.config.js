@@ -34,6 +34,10 @@ const config = {
         use: 'null-loader',
       },
       {
+        test: path.resolve(__dirname, 'node_modules/argo-ui/src/styles'),
+        use: 'null-loader',
+      },
+      {
         test: /\.scss$/,
         use: ['style-loader', 'raw-loader', 'sass-loader'],
       },
