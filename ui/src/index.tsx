@@ -125,7 +125,7 @@ const parseAnalysisRuns = (app: any, tree: any, rollout: any): RolloutAnalysisRu
 
     // Get the list of AnalysisRun node IDs whenever the tree or rollout props change
     React.useMemo(() => {
-        const filteredNodes = tree.nodes.filter(node => node.kind === 'AnalysisRun' && node.parentRefs.some(ref => ref.name === rollout.metadata.name));
+        const filteredNodes = tree.nodes.filter(node => node.kind === 'AnalysisRun' && (node.parentRefs || []).some(ref => ref.name === rollout.metadata.name));
         const nodeIds = filteredNodes.map(node => node.uid);
 
         // Check if there are any new AnalysisRun node IDs or if the count has changed from previous node IDs
@@ -216,7 +216,7 @@ const parseReplicaSets = (tree: any, rollout: any): RolloutReplicaSetInfo[] => {
     const ownedReplicaSets: {[key: string]: any} = {};
 
     for (const rs of allReplicaSets) {
-        for (const parentRef of rs.parentRefs) {
+        for (const parentRef of (rs.parentRefs || [])) {
             if (parentRef?.kind === 'Rollout' && parentRef?.name === rollout?.metadata?.name) {
                 const pods = [];
                 const imagesSet = new Set<string>();
@@ -255,7 +255,7 @@ const parseReplicaSets = (tree: any, rollout: any): RolloutReplicaSetInfo[] => {
                 }
 
                 for (const pod of allPods) {
-                    const [podParentRef] = pod.parentRefs;
+                    const [podParentRef] = pod.parentRefs || [];
                     if (podParentRef && podParentRef.kind === 'ReplicaSet' && podParentRef.name === rs.name) {
                         const ownedPod = {
                             objectMeta: {
