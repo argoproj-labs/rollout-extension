@@ -17,7 +17,7 @@ const parseInfoFromResourceNode = (app: any, tree: any, resource: State) => {
 
     ro.analysisRuns = parseAnalysisRuns(app, tree, resource);
 
-    ro.replicaSets = parseReplicaSets(tree, resource);
+    ro.replicaSets = parseReplicaSets(app, tree, resource);
 
     if (spec.strategy.canary) {
         ro.strategy = 'Canary';
@@ -186,7 +186,57 @@ const parseAnalysisRunStatus = (status: string): string => {
     }
 };
 
-const parseReplicaSets = (tree: any, rollout: any): RolloutReplicaSetInfo[] => {
+// Fetches the pod-template images (containers + initContainers) for each
+// ReplicaSet directly from its manifest. ArgoCD only populates `.images` on
+// Pod tree nodes, so revisions without live pods would otherwise show no image
+// details. Reading them from the ReplicaSet's spec.template mirrors what the
+// native Argo Rollouts dashboard shows, making the container image (and thus
+// the commit id in the tag) visible for every revision.
+const useReplicaSetImages = (app: any, replicaSetNodes: any[]): {[uid: string]: {images: string[]; initContainerImages: string[]}} => {
+    const [rsImages, setRsImages] = React.useState<{[uid: string]: {images: string[]; initContainerImages: string[]}}>({});
+
+    // Build a stable key so we only refetch when the set of ReplicaSets changes.
+    const rsKey = replicaSetNodes
+        .map(node => `${node.uid}:${node.resourceVersion || node.version || ''}`)
+        .sort()
+        .join(',');
+
+    React.useEffect(() => {
+        let cancelled = false;
+        const fetchImages = async () => {
+            const entries = await Promise.all(
+                replicaSetNodes.map(async node => {
+                    try {
+                        const state = await getResource(app.metadata.name, app.metadata.namespace, node);
+                        const podSpec = state?.spec?.template?.spec || {};
+                        const images = (podSpec.containers || []).map((c: any) => c.image).filter(Boolean);
+                        const initContainerImages = (podSpec.initContainers || []).map((c: any) => c.image).filter(Boolean);
+                        return [node.uid, {images, initContainerImages}] as const;
+                    } catch (e) {
+                        return [node.uid, {images: [], initContainerImages: []}] as const;
+                    }
+                })
+            );
+            if (!cancelled) {
+                const byUid: {[uid: string]: {images: string[]; initContainerImages: string[]}} = {};
+                for (const [uid, imgs] of entries) {
+                    byUid[uid] = imgs;
+                }
+                setRsImages(byUid);
+            }
+        };
+        if (replicaSetNodes.length > 0) {
+            fetchImages();
+        }
+        return () => {
+            cancelled = true;
+        };
+    }, [rsKey]);
+
+    return rsImages;
+};
+
+const parseReplicaSets = (app: any, tree: any, rollout: any): RolloutReplicaSetInfo[] => {
     const allReplicaSets = [];
     const allPods = [];
     for (const node of tree.nodes) {
@@ -212,6 +262,11 @@ const parseReplicaSets = (tree: any, rollout: any): RolloutReplicaSetInfo[] => {
         activePodHash = status?.blueGreen?.activeSelector || status?.stableRS || null;
         previewPodHash = status?.blueGreen?.previewSelector || status?.currentPodHash || null;
     }
+
+    const ownedReplicaSetNodes = allReplicaSets.filter((rs: any) =>
+        (rs.parentRefs || []).some((ref: any) => ref?.kind === 'Rollout' && ref?.name === rollout?.metadata?.name)
+    );
+    const fetchedImages = useReplicaSetImages(app, ownedReplicaSetNodes);
 
     const ownedReplicaSets: {[key: string]: any} = {};
 
@@ -287,6 +342,18 @@ const parseReplicaSets = (tree: any, rollout: any): RolloutReplicaSetInfo[] => {
                     }
                 }
                 
+                // Prefer images read from the ReplicaSet's pod template (available
+                // for every revision, including those scaled to zero); fall back to
+                // images gathered from live pods while the manifest fetch is in flight.
+                const rsFetched = fetchedImages[rs.uid];
+                const images = rsFetched && rsFetched.images.length > 0 ? rsFetched.images : Array.from(imagesSet);
+                const initContainerImages =
+                    rsFetched && rsFetched.initContainerImages.length > 0
+                        ? rsFetched.initContainerImages
+                        : initContainerImagesSet.size > 0
+                        ? Array.from(initContainerImagesSet)
+                        : undefined;
+
                 ownedReplicaSets[rs?.name] = {
                     objectMeta: {
                         name: rs.name,
@@ -295,8 +362,8 @@ const parseReplicaSets = (tree: any, rollout: any): RolloutReplicaSetInfo[] => {
                     },
                     status: rs?.health.status,
                     revision: parseRevision(rs),
-                    images: Array.from(imagesSet),
-                    initContainerImages: initContainerImagesSet.size > 0 ? Array.from(initContainerImagesSet) : undefined,
+                    images,
+                    initContainerImages,
                     canary: isCanary,
                     stable: isStable,
                     active: isActive,
@@ -345,3 +412,4 @@ export const component = Extension;
 ((window: any) => {
     window?.extensionsAPI?.registerResourceExtension(component, 'argoproj.io', 'Rollout', 'Rollout', {icon: 'fa-sharp fa-light fa-bars-progress fa-lg'});
 })(window);
+
