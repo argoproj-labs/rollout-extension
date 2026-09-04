@@ -8,7 +8,7 @@ const config = {
   },
   output: {
     filename: `extensions-${extName}.js`,
-    path: __dirname + `/dist/resources/extension-${extName}.js`,
+    path: __dirname + `/dist/resources`,
     libraryTarget: "window",
     library: ["tmp", "extensions"],
   },
@@ -19,6 +19,14 @@ const config = {
     react: 'React',
     'react-dom': 'ReactDOM',
     'react/jsx-runtime': 'ReactJSXRuntime',
+  },
+  devServer: {
+    compress: false,
+    historyApiFallback: {
+        disableDotRule: true
+    },
+    port: 4040,
+    host: process.env.ARGOCD_E2E_YARN_HOST || 'localhost',
   },
   module: {
     rules: [
