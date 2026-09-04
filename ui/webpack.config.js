@@ -20,10 +20,6 @@ const config = {
     'react-dom': 'ReactDOM',
     'react/jsx-runtime': 'ReactJSXRuntime',
   },
-  ignoreWarnings: [
-    {module: new RegExp('/node_modules/argo-ui/.*')},
-    {module: new RegExp('/node_modules/argo-rollouts/.*')},
-  ],
   devServer: {
     compress: false,
     historyApiFallback: {
