@@ -1,3 +1,4 @@
+import { ConfigProvider } from 'antd';
 import { RolloutWidget } from 'argo-rollouts/ui/src/app/components/rollout/rollout';
 import { ObjectMeta, TypeMeta } from 'argo-rollouts/ui/src/models/kubernetes';
 import { RolloutAnalysisRunInfo, RolloutReplicaSetInfo, RolloutRolloutInfo } from 'argo-rollouts/ui/src/models/rollout/generated';
@@ -337,7 +338,13 @@ interface ApplicationResourceTree {}
 
 export const Extension = (props: {application: any; tree: ApplicationResourceTree; resource: State}) => {
     const ro = parseInfoFromResourceNode(props.application, props.tree, props.resource);
-    return <RolloutWidget rollout={ro} />;
+    // antd's click wave renders through ReactDOM.render/createRoot, which React 19's
+    // react-dom (the one Argo CD exposes as window.ReactDOM) no longer has
+    return (
+        <ConfigProvider wave={{disabled: true}}>
+            <RolloutWidget rollout={ro} />
+        </ConfigProvider>
+    );
 };
 
 export const component = Extension;

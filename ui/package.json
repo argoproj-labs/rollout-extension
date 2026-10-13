@@ -6,12 +6,13 @@
     "@fortawesome/fontawesome-svg-core": "^6.4.0",
     "@fortawesome/free-solid-svg-icons": "^6.4.0",
     "@fortawesome/react-fontawesome": "^0.2.0",
+    "antd": "~5.12.4",
     "argo-rollouts": "git+https://github.com/argoproj/argo-rollouts.git#a4d50d8e65d5fa33a6e7f33f43be9a3df83b06f7",
     "argo-ui": "git+https://github.com/argoproj/argo-ui.git#5ff344ac9692c14dd108468bd3c020c3c75181cb",
     "classnames": "2.2.6",
     "json-loader": "^0.5.7",
     "axios": "^1.13.2",
-    "recharts": "^2.9.0",
+    "recharts": "^2.15.4",
     "null-loader": "^4.0.1",
     "react": "^16.9.3",
     "react-dom": "^16.9.3",
@@ -58,7 +59,7 @@
     "portable-fetch": "^3.0.0",
     "raw-loader": "^4.0.2",
     "sass-loader": "^10.0.0",
-    "style-loader": "^2.0.0",
+    "style-loader": "^1.3.0",
     "react-keyhooks": "^0.2.3",
     "rxjs": "^7.1.0",
     "sass": "^1.34.1",
@@ -67,7 +68,9 @@
   },
   "pnpm": {
     "overrides": {
-      "@types/react": "16.9.3"
+      "@types/react": "16.9.3",
+      "antd": "$antd",
+      "react-is": "^19.0.0"
     }
   },
   "packageManager": "pnpm@10.28.1"
