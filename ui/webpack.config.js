@@ -32,12 +32,13 @@ const config = {
         },
       },
       {
-        // prevent overriding global page styles
-        test: path.resolve(__dirname, 'node_modules/argo-ui/src/components/page/page.scss'),
+        // prevent overriding global page styles. Match by regex: with pnpm,
+        // node_modules/argo-ui is a symlink and webpack tests the real path.
+        test: /argo-ui[\\/]src[\\/]components[\\/]page[\\/]page\.scss$/,
         use: 'null-loader',
       },
       {
-        test: path.resolve(__dirname, 'node_modules/argo-ui/src/styles'),
+        test: /argo-ui[\\/]src[\\/]styles[\\/]/,
         use: 'null-loader',
       },
       {
