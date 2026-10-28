@@ -187,7 +187,7 @@ const parseAnalysisRunStatus = (status: string): string => {
     }
 };
 
-const parseReplicaSets = (tree: any, rollout: any): RolloutReplicaSetInfo[] => {
+export const parseReplicaSets = (tree: any, rollout: any): RolloutReplicaSetInfo[] => {
     const allReplicaSets = [];
     const allPods = [];
     for (const node of tree.nodes) {
@@ -231,18 +231,10 @@ const parseReplicaSets = (tree: any, rollout: any): RolloutReplicaSetInfo[] => {
                 let isPreview = false;
                 
                 if (strategy?.canary) {
-                    if (canaryPodHash && stablePodHash && canaryPodHash === stablePodHash) {
+                    if (stablePodHash && rsPodHash === stablePodHash) {
                         isStable = true;
-                        isCanary = false;
-                    } else if (stablePodHash && rsPodHash === stablePodHash) {
-                        isStable = true;
-                        isCanary = false;
                     } else if (canaryPodHash && rsPodHash === canaryPodHash) {
                         isCanary = true;
-                        isStable = false;
-                    } else {
-                        isStable = true;
-                        isCanary = false;
                     }
                 } else if (strategy?.blueGreen) {
                     if (activePodHash && rsPodHash === activePodHash) {

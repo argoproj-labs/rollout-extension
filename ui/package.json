@@ -32,6 +32,7 @@
   "scripts": {
     "preinstall": "npx only-allow pnpm",
     "start": "NODE_OPTIONS=--openssl-legacy-provider webpack --config ./webpack.config.js --watch",
+    "test": "react-scripts test --watchAll=false",
     "build": "NODE_OPTIONS=--openssl-legacy-provider webpack --config ./webpack.config.js && tar -C dist -cvf dist/extension.tar resources"
   },
   "eslintConfig": {
