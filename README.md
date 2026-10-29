@@ -18,6 +18,8 @@ Starting with `v0.4.0`, this extension requires **Argo CD v3.5 or later**. For A
 To install the extension use the [argocd-extension-installer](https://github.com/argoproj-labs/argocd-extension-installer) init container which runs during the startup of the argocd server.
 The init container downloads and extracts the JS file to `/tmp/extensions`. The argocd interface mounts the external JS file within the rollout resource.
 
+The examples below install `v0.4.1`, which requires Argo CD v3.5 or later. On an earlier Argo CD version, replace `v0.4.1` in `EXTENSION_URL` with `v0.3.7`, the last `v0.3.x` release (see [Compatibility](#compatibility)).
+
 
 ### Kustomize Patch
 
@@ -34,7 +36,7 @@ spec:
           image: quay.io/argoprojlabs/argocd-extension-installer:v0.0.8
           env:
           - name: EXTENSION_URL
-            value: https://github.com/argoproj-labs/rollout-extension/releases/download/v0.3.7/extension.tar
+            value: https://github.com/argoproj-labs/rollout-extension/releases/download/v0.4.1/extension.tar
           volumeMounts:
             - name: extensions
               mountPath: /tmp/extensions/
@@ -63,12 +65,10 @@ server:
       - name: rollout-extension
         env:
           - name: EXTENSION_URL
-            value: https://github.com/argoproj-labs/rollout-extension/releases/download/v0.3.7/extension.tar
+            value: https://github.com/argoproj-labs/rollout-extension/releases/download/v0.4.1/extension.tar
 ```
 
 #### Using `server.initContainers`, `server.volumeMounts`, and `server.volumes` directly
-kubectl apply -f https://raw.githubusercontent.com/argoproj/argo-rollouts/master/docs/getting-started/basic/rollout.yaml
-kubectl apply -f https://raw.githubusercontent.com/argoproj/argo-rollouts/master/docs/getting-started/basic/service.yaml
 
 ```yaml
 server:
@@ -77,7 +77,7 @@ server:
       image: quay.io/argoprojlabs/argocd-extension-installer:v0.0.8
       env:
       - name: EXTENSION_URL
-        value: https://github.com/argoproj-labs/rollout-extension/releases/download/v0.3.7/extension.tar
+        value: https://github.com/argoproj-labs/rollout-extension/releases/download/v0.4.1/extension.tar
       volumeMounts:
         - name: extensions
           mountPath: /tmp/extensions/
