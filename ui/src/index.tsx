@@ -20,9 +20,9 @@ const parseInfoFromResourceNode = (app: any, tree: any, resource: State) => {
 
     ro.replicaSets = parseReplicaSets(tree, resource);
 
-    if (spec.strategy.canary) {
+    if (spec.strategy?.canary) {
         ro.strategy = 'Canary';
-        const steps = spec.strategy?.canary?.steps || [];
+        const steps = spec.strategy.canary.steps || [];
         ro.steps = steps;
 
         if (steps && status.currentStepIndex !== null && steps.length > 0) {
@@ -52,10 +52,8 @@ const parseInfoFromResourceNode = (app: any, tree: any, resource: State) => {
     }
 
     ro.containers = [];
-    if (spec.template) {
-        for (const c of spec.template?.spec?.containers) {
-            ro.containers.push({name: c.name, image: c.image});
-        }
+    for (const c of spec.template?.spec?.containers || []) {
+        ro.containers.push({name: c.name, image: c.image});
     }
 
     ro.current = status.replicas;
@@ -287,14 +285,14 @@ const parseReplicaSets = (tree: any, rollout: any): RolloutReplicaSetInfo[] => {
                         pods.push(ownedPod);
                     }
                 }
-                
-                ownedReplicaSets[rs?.name] = {
+
+                ownedReplicaSets[rs.name] = {
                     objectMeta: {
                         name: rs.name,
                         uid: rs.uid,
                         namespace: rs.namespace
                     },
-                    status: rs?.health.status,
+                    status: rs.health?.status,
                     revision: parseRevision(rs),
                     images: Array.from(imagesSet),
                     initContainerImages: initContainerImagesSet.size > 0 ? Array.from(initContainerImagesSet) : undefined,
@@ -305,7 +303,7 @@ const parseReplicaSets = (tree: any, rollout: any): RolloutReplicaSetInfo[] => {
                 };
                 
                 if (pods.length > 0) {
-                    ownedReplicaSets[rs?.name].pods = pods;
+                    ownedReplicaSets[rs.name].pods = pods;
                 }
             }
         }
