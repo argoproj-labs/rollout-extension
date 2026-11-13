@@ -52,10 +52,8 @@ const parseInfoFromResourceNode = (app: any, tree: any, resource: State) => {
     }
 
     ro.containers = [];
-    if (spec.template) {
-        for (const c of spec.template?.spec?.containers) {
-            ro.containers.push({name: c.name, image: c.image});
-        }
+    for (const c of spec.template?.spec?.containers || []) {
+        ro.containers.push({name: c.name, image: c.image});
     }
 
     ro.current = status.replicas;
@@ -294,7 +292,7 @@ const parseReplicaSets = (tree: any, rollout: any): RolloutReplicaSetInfo[] => {
                         uid: rs.uid,
                         namespace: rs.namespace
                     },
-                    status: rs?.health.status,
+                    status: rs.health?.status,
                     revision: parseRevision(rs),
                     images: Array.from(imagesSet),
                     initContainerImages: initContainerImagesSet.size > 0 ? Array.from(initContainerImagesSet) : undefined,
@@ -305,7 +303,7 @@ const parseReplicaSets = (tree: any, rollout: any): RolloutReplicaSetInfo[] => {
                 };
                 
                 if (pods.length > 0) {
-                    ownedReplicaSets[rs?.name].pods = pods;
+                    ownedReplicaSets[rs.name].pods = pods;
                 }
             }
         }
