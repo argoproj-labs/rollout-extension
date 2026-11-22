@@ -30,6 +30,7 @@
     "react": "^16.9.3"
   },
   "scripts": {
+    "test": "react-scripts test",
     "preinstall": "npx only-allow pnpm",
     "start": "NODE_OPTIONS=--openssl-legacy-provider webpack --config ./webpack.config.js --watch",
     "build": "NODE_OPTIONS=--openssl-legacy-provider webpack --config ./webpack.config.js && tar -C dist -cvf dist/extension.tar resources"
